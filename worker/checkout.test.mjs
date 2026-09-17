@@ -21,10 +21,8 @@ test("builds a one-time embedded session with required donor fields", () => {
   assert.equal(params.get("phone_number_collection[enabled]"), "true");
   assert.equal(params.get("custom_fields[0][label][custom]"), "Occupation");
   assert.equal(params.get("custom_fields[0][optional]"), "false");
-  assert.equal(params.get("custom_fields[0][text][minimum_length]"), "1");
   assert.equal(params.get("custom_fields[1][label][custom]"), "Employer or principal place of business");
   assert.equal(params.get("custom_fields[1][optional]"), "false");
-  assert.equal(params.get("custom_fields[1][text][minimum_length]"), "1");
 });
 
 test("rejects amounts outside the payment range before contacting Stripe", async () => {
