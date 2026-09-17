@@ -32,8 +32,8 @@
 .donation-panel { background: #fff; padding: 38px; border-top: 5px solid var(--red); box-shadow: var(--shadow); }
 .donation-intro h2 { font-size: clamp(2rem, 3vw, 2.8rem); margin-bottom: 21px; }
 .donation-intro > p:not(.eyebrow) { color: var(--muted); }
-.donation-primary { margin-top: 18px; }
-.donation-note a { color: var(--navy); font-weight: 700; }
+.donation-direct { margin: 14px 0 0; color: var(--muted); font-size: .9rem; }
+.donation-direct a, .donation-note a { color: var(--navy); font-weight: 700; }
 .donation-note { margin: 30px 0 0; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; line-height: 1.6; }
 .donation-embed stripe-buy-button { display: block; margin-top: 24px; }
 
