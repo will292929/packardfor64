@@ -7,3 +7,11 @@ textarea{font:inherit}
 .preview-form textarea{display:block;width:100%;margin-top:8px;padding:10px 14px;border:1px solid #d8dce5;border-radius:2px;background:#f7f8fa;color:#333;resize:vertical}
 .preview-form .form-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
 .form-notice a{color:var(--navy);text-decoration:underline;font-weight:700}
+.sms-consent{border-top:1px solid var(--line);padding-top:18px;margin:5px 0 20px}
+.sms-consent .consent{margin-bottom:8px}
+.sms-consent .consent input{flex:0 0 auto;accent-color:var(--navy)}
+.sms-consent .consent a,.policy-copy a{color:var(--navy);text-decoration:underline;font-weight:700}
+.sms-consent-note{font-size:.75rem;color:var(--muted);line-height:1.5;margin:0 0 14px 25px}
+.policy-copy h2{font-size:clamp(1.4rem,2.3vw,1.8rem);margin:34px 0 12px}
+.policy-copy h2:first-of-type{margin-top:26px}
+.policy-copy p{line-height:1.75}

@@ -8,3 +8,14 @@ if (menuButton && nav) {
     nav.classList.toggle('open', !isOpen);
   });
 }
+
+const smsOptIn = document.querySelector('#sms-opt-in');
+const phoneField = document.querySelector('input[name="phone"]');
+
+if (smsOptIn && phoneField) {
+  const syncPhoneRequirement = () => {
+    phoneField.required = smsOptIn.checked;
+  };
+  smsOptIn.addEventListener('change', syncPhoneRequirement);
+  syncPhoneRequirement();
+}

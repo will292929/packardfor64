@@ -6,7 +6,7 @@ The recovered pages are Home, About Us, and Contact Us. The original logo and fi
 
 ## Contact and updates forms
 
-The GitHub Pages contact and email-updates forms submit to FormSubmit, addressed to `ShawnPackardfor64@gmail.com`. That destination is user-supplied and has **not** been verified by receipt. FormSubmit requires a one-time activation from the recipient inbox before delivery is confirmed. The forms disclose this pending state and provide a direct email fallback. No SMS enrollment is offered.
+The GitHub Pages contact and email-updates forms submit to FormSubmit, addressed to `ShawnPackardfor64@gmail.com`. That destination is user-supplied and has **not** been verified by receipt. FormSubmit requires a one-time activation from the recipient inbox before delivery is confirmed. The forms disclose this pending state and provide a direct email fallback. The contact form has a separate, optional SMS opt-in checkbox; the email-updates form does not enroll people in texts. This site does not send texts or connect to a messaging provider.
 
 To finish activation:
 
@@ -16,7 +16,7 @@ To finish activation:
 
 FormSubmit's documentation says it retains submissions for up to 30 days. The campaign should review the form-information notice and decide whether this third-party handling fits its privacy practices before collecting real supporter data. Do not put payment-card information, passwords, or secret keys in this repository or the forms.
 
-The original site's Privacy Policy and Terms links led to `example.com`; those links are not reproduced. Donation processing is not implemented.
+The supplied Text Message Terms and Privacy Policy have been adapted to the site's current capabilities and published at `/text-terms/` and `/privacy/` in the GitHub Pages build. The Campaign should review factual data practices and text-program operations before relying on these pages for registration or compliance. The requested `https://www.packardfor64.com/privacy` and `/text-terms` URLs still return 404 because the original domain is not connected to GitHub Pages. Use the live `https://will292929.github.io/packardfor64/` URLs for now. Donation processing is not implemented.
 
 ## Publishing
 

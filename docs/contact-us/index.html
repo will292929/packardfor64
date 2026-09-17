@@ -36,10 +36,14 @@
               <label>Last Name *<input name="last_name" autocomplete="family-name" placeholder="Last Name" maxlength="120" required></label>
             </div>
             <div class="form-row">
-              <label>Phone (optional)<input name="phone" type="tel" autocomplete="tel" placeholder="Phone" maxlength="30"></label>
+              <label>Phone (optional unless requesting texts)<input name="phone" type="tel" autocomplete="tel" placeholder="Phone" maxlength="30"></label>
               <label>Email *<input name="email" type="email" autocomplete="email" placeholder="Email" maxlength="254" required></label>
             </div>
             <label>Message *<textarea name="message" rows="5" maxlength="3000" placeholder="How can we help?" required></textarea></label>
+            <div class="sms-consent">
+              <label class="consent"><input id="sms-opt-in" name="sms_opt_in" type="checkbox" value="Yes, I agree to receive recurring campaign texts under the linked Text Message Terms and Privacy Policy."><span>I agree to receive recurring campaign texts from Shawn Packard for State Representative District 64 at the number I provided, including campaign updates, volunteer opportunities, fundraising requests, and voting information. Consent is not required to donate or volunteer. Message frequency may vary; message and data rates may apply. Reply STOP to opt out or HELP for help. See our <a href="../text-terms/" target="_blank" rel="noopener">Text Message Terms</a> and <a href="../privacy/" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
+              <p class="sms-consent-note">Leave this box unchecked to send a message without requesting texts. This website does not send text messages; the form records your request for the campaign.</p>
+            </div>
             <button class="button button-red" type="submit">Send message</button>
             <p class="form-notice">Submissions go through FormSubmit to the campaign inbox. Inbox activation is still being verified, so for urgent contact email <a href="mailto:ShawnPackardfor64@gmail.com">ShawnPackardfor64@gmail.com</a>. Read the <a href="../form-information/">form information notice</a>.</p>
           </form>
@@ -47,5 +51,5 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="container footer-grid"><div><a href="../" class="footer-logo"><img src="../assets/logo.png" alt="Shawn Packard campaign logo"></a><p>Shawn Packard is fighting to protect Maine’s youth, strengthen our communities, and bring common-sense leadership back to Augusta.</p></div><div><h2>Pages</h2><a href="../">Home</a><a href="../About-us/">About Us</a><a href="../contact-us/">Contact Us</a><span>Donate (not yet available)</span><a href="../form-information/">Form Information</a></div><div><h2>Information</h2><p><strong>Address</strong><br>Waterville, Maine, 04901</p><p><strong>Call Us</strong><br><a href="tel:+12074318012">207-431-8012</a></p></div></div><div class="container footer-bottom"><span>© Paid for by Shawn Packard for State Representative District 64 — All Rights Reserved.</span><span>GitHub Pages · Donations are not enabled</span></div></footer>
+  <footer class="site-footer"><div class="container footer-grid"><div><a href="../" class="footer-logo"><img src="../assets/logo.png" alt="Shawn Packard campaign logo"></a><p>Shawn Packard is fighting to protect Maine’s youth, strengthen our communities, and bring common-sense leadership back to Augusta.</p></div><div><h2>Pages</h2><a href="../">Home</a><a href="../About-us/">About Us</a><a href="../contact-us/">Contact Us</a><span>Donate (not yet available)</span><a href="../form-information/">Form Information</a><a href="../privacy/">Privacy Policy</a><a href="../text-terms/">Text Message Terms</a></div><div><h2>Information</h2><p><strong>Address</strong><br>Waterville, Maine, 04901</p><p><strong>Call Us</strong><br><a href="tel:+12074318012">207-431-8012</a></p></div></div><div class="container footer-bottom"><span>© Paid for by Shawn Packard for State Representative District 64 — All Rights Reserved.</span><span>GitHub Pages · Donations are not enabled</span></div></footer>
 </body></html>
