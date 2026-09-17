@@ -30,6 +30,7 @@ export function sessionParameters(amountCents) {
     return_url: RETURN_URL,
     billing_address_collection: "required",
     "name_collection[individual][enabled]": "true",
+    "name_collection[individual][optional]": "false",
     "phone_number_collection[enabled]": "true",
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][unit_amount]": String(amountCents),
@@ -39,10 +40,14 @@ export function sessionParameters(amountCents) {
     "custom_fields[0][label][type]": "custom",
     "custom_fields[0][label][custom]": "Occupation",
     "custom_fields[0][type]": "text",
+    "custom_fields[0][optional]": "false",
+    "custom_fields[0][text][minimum_length]": "1",
     "custom_fields[1][key]": "employer",
     "custom_fields[1][label][type]": "custom",
     "custom_fields[1][label][custom]": "Employer or principal place of business",
     "custom_fields[1][type]": "text",
+    "custom_fields[1][optional]": "false",
+    "custom_fields[1][text][minimum_length]": "1",
     "metadata[election]": "2026-general",
     "payment_intent_data[metadata][election]": "2026-general"
   });
