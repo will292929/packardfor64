@@ -1,0 +1,51 @@
+.donation-banner {
+  position: relative;
+  overflow: hidden;
+  padding: 102px 0 112px;
+  background: linear-gradient(110deg, #102650 0%, #173362 62%, #1e3c70 100%);
+}
+
+.donation-banner::after {
+  content: "";
+  position: absolute;
+  right: -130px;
+  bottom: -220px;
+  width: 520px;
+  height: 520px;
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 50%;
+  box-shadow: 0 0 0 70px rgba(255, 255, 255, .03), 0 0 0 140px rgba(255, 255, 255, .02);
+  pointer-events: none;
+}
+
+.donation-banner .container { position: relative; z-index: 1; }
+.donation-banner h1 { max-width: 800px; }
+.donation-banner p:last-child { max-width: 760px; }
+.donation-section { background: var(--offwhite); }
+.donation-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, .9fr); gap: 8%; align-items: start; }
+.donation-story h2 { margin-bottom: 23px; }
+.donation-photo { margin-top: 36px; overflow: hidden; border-radius: 3px; box-shadow: var(--shadow); }
+.donation-photo img { width: 100%; max-height: 490px; object-fit: cover; object-position: center 24%; }
+.donation-follow { margin-top: 42px; }
+.donation-follow h3 { margin-bottom: 10px; }
+.donation-follow p { color: var(--muted); }
+.donation-panel { background: #fff; padding: 38px; border-top: 5px solid var(--red); box-shadow: var(--shadow); }
+.donation-contact h2 { font-size: clamp(2rem, 3vw, 2.8rem); margin-bottom: 21px; }
+.donation-contact > p:not(.eyebrow) { color: var(--muted); }
+.donation-contact .button { margin-top: 10px; }
+.donation-contact-detail { margin: 24px 0 0; font-size: .9rem; }
+.donation-contact-detail a, .donation-note a { color: var(--navy); font-weight: 700; }
+.donation-note { margin: 30px 0 0; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; line-height: 1.6; }
+.donation-embed stripe-buy-button { display: block; }
+
+@media (max-width: 900px) {
+  .donation-grid { grid-template-columns: 1fr; gap: 48px; }
+  .donation-panel { max-width: 650px; }
+}
+
+@media (max-width: 700px) {
+  .donation-banner { padding: 64px 0 72px; }
+  .donation-banner::after { right: -320px; }
+  .donation-panel { padding: 28px 24px; }
+  .donation-photo img { max-height: 410px; }
+}
