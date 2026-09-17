@@ -15,3 +15,4 @@ textarea{font:inherit}
 .policy-copy h2{font-size:clamp(1.4rem,2.3vw,1.8rem);margin:34px 0 12px}
 .policy-copy h2:first-of-type{margin-top:26px}
 .policy-copy p{line-height:1.75}
+.campaign-video{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#07142f;box-shadow:var(--shadow)}

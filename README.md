@@ -2,7 +2,7 @@
 
 This repository contains a reconstruction of the former `packardfor64.com` campaign site. `docs/` is the GitHub Pages build; `dist/` is the earlier ChatGPT Sites build. The Pages build is designed to publish at `https://will292929.github.io/packardfor64/`.
 
-The recovered pages are Home, About Us, and Contact Us. The original logo and five recovered images are included in `docs/assets/`. The original video and payment processing were not recoverable. Figures copied from the former site are marked unverified. This is not a pixel-certified reproduction.
+The recovered pages are Home, About Us, and Contact Us. The original logo and five recovered images are included in `docs/assets/`. The campaign video has been recovered from the public [Packard for 64 Facebook post](https://www.facebook.com/PackardFor64/videos/campaign-video/905877975531100/) and is hosted locally as an MP4 with a thumbnail, so the site uses a native player without a Facebook embed. Payment processing was not recoverable. Figures copied from the former site are marked unverified. This is not a pixel-certified reproduction.
 
 ## Contact and updates forms
 
