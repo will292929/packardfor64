@@ -3,6 +3,8 @@ const RETURN_URL = `${SITE_ORIGIN}/packardfor64/donate/return/?session_id={CHECK
 const MIN_CENTS = 500;
 const MAX_CENTS = 50000;
 const STRIPE_VERSION = "2025-09-30.clover";
+const FORM_EMAIL = "ShawnPackardfor64@gmail.com";
+const FORM_URL = `https://formsubmit.co/ajax/${FORM_EMAIL}`;
 
 function headers(origin) {
   const result = new Headers({
@@ -123,6 +125,107 @@ async function saveDonor(db, sessionId, amountCents, donor) {
     .bind(sessionId, amountCents, donor.fullName, donor.streetAddress,
       donor.addressLine2, donor.city, donor.state, donor.country, donor.postalCode,
       donor.occupation, donor.employer, donor.phone, donor.email).run();
+}
+
+async function sendPaidDonationEmail(row, fetchMail) {
+  const amount = new Intl.NumberFormat("en-US", {
+    style: "currency", currency: "USD"
+  }).format(row.amount_cents / 100);
+  const response = await fetchMail(FORM_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Origin: SITE_ORIGIN,
+      Referer: `${SITE_ORIGIN}/packardfor64/donate/`
+    },
+    body: JSON.stringify({
+      _subject: `Packard for 64 — paid donation ${row.session_id}`,
+      _captcha: "false",
+      _template: "table",
+      payment_status: "PAID — confirmed by Stripe",
+      election: "2026 General Election",
+      amount,
+      full_name: row.full_name,
+      street_address: row.street_address,
+      address_line_2: row.address_line2,
+      city: row.city,
+      state: row.state,
+      country: row.country,
+      postal_code: row.postal_code,
+      occupation: row.occupation,
+      employer: row.employer,
+      phone: row.phone,
+      email: row.email,
+      stripe_checkout_session: row.session_id,
+      note: "Card details are held by Stripe, not included in this email. Reconcile in Stripe before reporting."
+    })
+  });
+  if (!response.ok) throw new Error("Mail provider rejected request");
+  const result = await response.json();
+  if (result.success !== true && result.success !== "true") {
+    throw new Error("Mail provider did not accept submission");
+  }
+}
+
+export async function reconcileDonations(env, fetchStripe = fetch, fetchMail = fetch) {
+  if (!env.DONORS || !env.STRIPE_SECRET_KEY) {
+    throw new Error("Donation reconciliation is not configured");
+  }
+  const { results = [] } = await env.DONORS.prepare(`SELECT session_id, amount_cents,
+    full_name, street_address, address_line2, city, state, country, postal_code,
+    occupation, employer, phone, email, payment_status
+    FROM donor_submissions
+    WHERE payment_status IN ('pending', 'paid') AND email_sent_at IS NULL
+    ORDER BY created_at ASC LIMIT 25`).all();
+  for (const row of results) {
+    try {
+      const stripeResponse = await fetchStripe(
+        `https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(row.session_id)}`,
+        { headers: {
+          Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
+          "Stripe-Version": STRIPE_VERSION
+        } }
+      );
+      if (!stripeResponse.ok) throw new Error("Could not check Stripe session");
+      const session = await stripeResponse.json();
+      if (session.id !== row.session_id || session.ui_mode !== "custom"
+        || session.metadata?.election !== "2026-general"
+        || session.currency !== "usd" || session.amount_total !== row.amount_cents) {
+        throw new Error("Stripe session does not match the donor record");
+      }
+      if (session.status === "expired" && row.payment_status === "pending") {
+        await env.DONORS.prepare(`UPDATE donor_submissions SET payment_status = 'expired',
+          updated_at = CURRENT_TIMESTAMP WHERE session_id = ? AND payment_status = 'pending'`)
+          .bind(row.session_id).run();
+        continue;
+      }
+      if (session.status !== "complete" || session.payment_status !== "paid") continue;
+      if (row.payment_status !== "paid") {
+        await env.DONORS.prepare(`UPDATE donor_submissions SET payment_status = 'paid',
+          updated_at = CURRENT_TIMESTAMP WHERE session_id = ? AND payment_status = 'pending'`)
+          .bind(row.session_id).run();
+      }
+      const claim = await env.DONORS.prepare(`UPDATE donor_submissions
+        SET email_claimed_at = CURRENT_TIMESTAMP WHERE session_id = ?
+        AND payment_status = 'paid' AND email_sent_at IS NULL
+        AND (email_claimed_at IS NULL OR email_claimed_at <= datetime('now', '-10 minutes'))`)
+        .bind(row.session_id).run();
+      if (claim.meta.changes !== 1) continue;
+      try {
+        await sendPaidDonationEmail(row, fetchMail);
+        await env.DONORS.prepare(`UPDATE donor_submissions SET email_sent_at = CURRENT_TIMESTAMP,
+          email_claimed_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?`)
+          .bind(row.session_id).run();
+      } catch {
+        await env.DONORS.prepare(`UPDATE donor_submissions SET email_claimed_at = NULL
+          WHERE session_id = ? AND email_sent_at IS NULL`).bind(row.session_id).run();
+        throw new Error("Donation email was not accepted");
+      }
+    } catch (error) {
+      console.error("Donation reconciliation failed", error.message);
+    }
+  }
 }
 
 export async function handleRequest(request, env, fetchStripe = fetch) {
@@ -251,5 +354,8 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
 export default {
   fetch(request, env) {
     return handleRequest(request, env);
+  },
+  scheduled(_event, env, ctx) {
+    ctx.waitUntil(reconcileDonations(env));
   }
 };

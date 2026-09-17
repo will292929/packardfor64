@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { elementsSessionParameters, handleRequest, sessionParameters, validateDonor } from "./checkout.js";
+import { elementsSessionParameters, handleRequest, reconcileDonations, sessionParameters, validateDonor } from "./checkout.js";
 
 const url = "https://packardfor64-donations.example.workers.dev/checkout-session";
 const origin = "https://will292929.github.io";
@@ -107,4 +107,88 @@ test("returns a campaign session's payment status without donor data", async () 
   });
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), { status: "complete", paymentStatus: "paid" });
+});
+
+function donationDatabase() {
+  const row = {
+    session_id: "cs_test_abc", amount_cents: 10000,
+    full_name: donor.fullName, street_address: donor.streetAddress,
+    address_line2: donor.addressLine2, city: donor.city, state: donor.state,
+    country: donor.country, postal_code: donor.postalCode,
+    occupation: donor.occupation, employer: donor.employer,
+    phone: donor.phone, email: donor.email, payment_status: "pending",
+    email_claimed_at: null, email_sent_at: null
+  };
+  return {
+    row,
+    prepare(sql) {
+      return {
+        all: async () => ({ results: row.email_sent_at ? [] : [{ ...row }] }),
+        bind: () => ({ run: async () => {
+          if (sql.includes("payment_status = 'expired'")) row.payment_status = "expired";
+          if (sql.includes("payment_status = 'paid',")) row.payment_status = "paid";
+          if (sql.includes("SET email_claimed_at = CURRENT_TIMESTAMP")) {
+            if (row.email_claimed_at || row.email_sent_at) return { meta: { changes: 0 } };
+            row.email_claimed_at = "claimed";
+          }
+          if (sql.includes("email_sent_at = CURRENT_TIMESTAMP")) row.email_sent_at = "sent";
+          if (sql.includes("SET email_claimed_at = NULL")) row.email_claimed_at = null;
+          return { meta: { changes: 1 } };
+        } })
+      };
+    }
+  };
+}
+
+function stripeLookup(paymentStatus, status = "complete") {
+  return async (_url, options) => {
+    assert.equal(options.headers.Authorization, "Bearer sk_test_not_real");
+    return new Response(JSON.stringify({
+      id: "cs_test_abc", ui_mode: "custom", metadata: { election: "2026-general" },
+      currency: "usd", amount_total: 10000, status, payment_status: paymentStatus
+    }));
+  };
+}
+
+test("emails full donor details only after Stripe confirms payment, then deduplicates", async () => {
+  const db = donationDatabase();
+  let emails = 0;
+  const mail = async (url, options) => {
+    emails += 1;
+    assert.equal(url, "https://formsubmit.co/ajax/ShawnPackardfor64@gmail.com");
+    const body = JSON.parse(options.body);
+    assert.match(body._subject, /paid donation cs_test_abc/);
+    assert.equal(body.amount, "$100.00");
+    assert.equal(body.full_name, donor.fullName);
+    assert.equal(body.occupation, donor.occupation);
+    assert.equal(body.employer, donor.employer);
+    assert.equal(body.email, donor.email);
+    assert.equal(options.body.includes("card_number"), false);
+    return new Response(JSON.stringify({ success: "true" }));
+  };
+  await reconcileDonations({ DONORS: db, STRIPE_SECRET_KEY: "sk_test_not_real" },
+    stripeLookup("unpaid", "open"), mail);
+  assert.equal(emails, 0);
+  await reconcileDonations({ DONORS: db, STRIPE_SECRET_KEY: "sk_test_not_real" },
+    stripeLookup("paid"), mail);
+  assert.equal(db.row.payment_status, "paid");
+  assert.equal(db.row.email_sent_at, "sent");
+  await reconcileDonations({ DONORS: db, STRIPE_SECRET_KEY: "sk_test_not_real" },
+    stripeLookup("paid"), mail);
+  assert.equal(emails, 1);
+});
+
+test("failed email delivery remains retryable", async () => {
+  const db = donationDatabase();
+  const originalError = console.error;
+  console.error = () => {};
+  try {
+    await reconcileDonations({ DONORS: db, STRIPE_SECRET_KEY: "sk_test_not_real" },
+      stripeLookup("paid"), async () => new Response(JSON.stringify({ success: "false" })));
+  } finally {
+    console.error = originalError;
+  }
+  assert.equal(db.row.payment_status, "paid");
+  assert.equal(db.row.email_sent_at, null);
+  assert.equal(db.row.email_claimed_at, null);
 });
