@@ -1,17 +1,33 @@
 # Packard for 64 site recovery
 
-This is a private-preview reconstruction of the former campaign site. It includes Home, About Us, and Contact Us. The original logo and five recovered images are served locally from `dist/assets/`.
+This repository contains a reconstruction of the former `packardfor64.com` campaign site. `docs/` is the GitHub Pages build; `dist/` is the earlier ChatGPT Sites build. The Pages build is designed to publish at `https://will292929.github.io/packardfor64/`.
 
-The original host returned HTTP 403 during extraction. Search-indexed page content was available for `/`, `/About-us`, `/contact-us`, and `/donate`. The donation page, payment handling, privacy/terms pages, and the original campaign video are not implemented. The old forms are display-only and explicitly collect no data. This is not a pixel-certified copy; the full HTML/CSS and video asset were not recoverable.
+The recovered pages are Home, About Us, and Contact Us. The original logo and five recovered images are included in `docs/assets/`. The original video and payment processing were not recoverable. Figures copied from the former site are marked unverified. This is not a pixel-certified reproduction.
 
-The archived site contained links to `example.com` for Privacy Policy and Terms of Service. Those links have not been reproduced. Longer biography and contact text has been adapted from the indexed content, while the key page structure, labels, public campaign links, and images are retained. Statistical figures are marked as unverified.
+## Contact and updates forms
+
+The GitHub Pages contact and email-updates forms submit to FormSubmit, addressed to `ShawnPackardfor64@gmail.com`. That destination is user-supplied and has **not** been verified by receipt. FormSubmit requires a one-time activation from the recipient inbox before delivery is confirmed. The forms disclose this pending state and provide a direct email fallback. No SMS enrollment is offered.
+
+To finish activation:
+
+1. Ask the holder of `ShawnPackardfor64@gmail.com` to find FormSubmit's activation email (including Spam) and click its confirmation link.
+2. Submit a clearly marked, fictional-data test through each live form.
+3. Confirm both messages actually arrive in the campaign inbox. Only then remove the pending-delivery notice from the forms and `docs/form-information/`.
+
+FormSubmit's documentation says it retains submissions for up to 30 days. The campaign should review the form-information notice and decide whether this third-party handling fits its privacy practices before collecting real supporter data. Do not put payment-card information, passwords, or secret keys in this repository or the forms.
+
+The original site's Privacy Policy and Terms links led to `example.com`; those links are not reproduced. Donation processing is not implemented.
+
+## Publishing
+
+GitHub Pages is configured to publish from `main` / `docs`. All site files are in this repository; there is no build step. For local review, serve the repository root with a static HTTP server and open `/docs/`.
 
 ## Source references
 
 - Home: https://packardfor64.com/
 - About: https://packardfor64.com/About-us
 - Contact: https://packardfor64.com/contact-us
-- Original media: `https://assets.cdn.filesafe.space/foZrtJl9hKtqbg3hTua6/media/` (the source filenames are recorded below)
+- Original media: `https://assets.cdn.filesafe.space/foZrtJl9hKtqbg3hTua6/media/`
 
 | Local asset | Original media filename | Role |
 | --- | --- | --- |
@@ -21,5 +37,3 @@ The archived site contained links to `example.com` for Privacy Policy and Terms 
 | service.png | 69015b3d8c192c859633016d.png | Discover Waterville emblem |
 | discover.jpeg | 690159698a87f3116bfa50c8.jpeg | AYCC photograph |
 | aycc.webp | 69015e0cff3e444f9ff059f1.webp | MMTC emblem |
-
-Run locally with any static server pointed at `dist/`, e.g. `python -m http.server 4173 -d dist`. Do not make this site public until the campaign has reviewed the content, assets, legal disclosures, forms, and missing video/donation destinations.
