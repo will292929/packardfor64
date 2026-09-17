@@ -6,8 +6,8 @@
   <meta name="description" content="Shawn Packard for Maine House District 64 — campaign information and community updates.">
   <title>Home | Shawn Packard for District 64</title>
   <link rel="icon" href="./assets/logo.png">
-  <link rel="stylesheet" href="./styles.css">
-  <script src="./site.js" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=20260917c">
+  <script src="./site.js?v=20260917c" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -80,9 +80,10 @@
           <a class="button button-navy" href="https://www.facebook.com/PackardFor64/" target="_blank" rel="noopener noreferrer">Follow on Facebook <span aria-hidden="true">↗</span></a>
         </div>
         <div class="form-card">
-          <form class="preview-form" action="https://formsubmit.co/ShawnPackardfor64@gmail.com" method="POST">
+          <form class="preview-form" data-formsubmit data-success-message="Thanks — your email update request was submitted." action="https://formsubmit.co/ShawnPackardfor64@gmail.com" method="POST">
             <input type="hidden" name="_subject" value="Packard for 64 — email updates request">
             <input type="hidden" name="_url" value="https://will292929.github.io/packardfor64/">
+            <input type="hidden" name="_captcha" value="false">
             <input class="form-honeypot" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
             <div class="form-row">
               <label>First Name *<input name="first_name" autocomplete="given-name" placeholder="First Name" maxlength="120" required></label>
@@ -91,7 +92,7 @@
             <label>Email *<input name="email" type="email" autocomplete="email" placeholder="Email" maxlength="254" required></label>
             <label class="consent"><input type="checkbox" name="email_updates_requested" value="Yes" required><span>I request campaign updates by email. This does not sign me up for text messages.</span></label>
             <button class="button button-red" type="submit">Request email updates</button>
-            <p class="form-notice">Form delivery to the campaign inbox is not yet confirmed. To make sure your message is received, email <a href="mailto:ShawnPackardfor64@gmail.com">ShawnPackardfor64@gmail.com</a> directly. Read our <a href="./form-information/">form information</a>.</p>
+            <p class="form-status" role="status" aria-live="polite"></p>
           </form>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Contact the Shawn Packard for District 64 campaign."><title>Contact Us | Shawn Packard for District 64</title><link rel="icon" href="../assets/logo.png"><link rel="stylesheet" href="../styles.css"><script src="../site.js" defer></script></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Contact the Shawn Packard for District 64 campaign."><title>Contact Us | Shawn Packard for District 64</title><link rel="icon" href="../assets/logo.png"><link rel="stylesheet" href="../styles.css?v=20260917c"><script src="../site.js?v=20260917c" defer></script></head>
 <body>
   <header class="site-header"><div class="container header-inner"><a class="brand" href="../" aria-label="Shawn Packard for State Representative home"><img src="../assets/logo.png" alt="Shawn Packard campaign logo"></a><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="menu-bars" aria-hidden="true"></span><span>Menu</span></button><nav class="site-nav" id="site-nav" aria-label="Main navigation"><a href="../">Home</a><a href="../About-us/">About Us</a><a href="../contact-us/" aria-current="page">Contact Us</a><a href="../donate/">Donate</a></nav></div></header>
   <main>
@@ -27,9 +27,10 @@
         </div>
         <div class="form-card">
           <h3>Send a message</h3>
-          <form class="preview-form" action="https://formsubmit.co/ShawnPackardfor64@gmail.com" method="POST">
+          <form class="preview-form" data-formsubmit data-success-message="Thanks — your message was submitted." action="https://formsubmit.co/ShawnPackardfor64@gmail.com" method="POST">
             <input type="hidden" name="_subject" value="Packard for 64 — contact message">
             <input type="hidden" name="_url" value="https://will292929.github.io/packardfor64/contact-us/">
+            <input type="hidden" name="_captcha" value="false">
             <input class="form-honeypot" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
             <div class="form-row">
               <label>First Name *<input name="first_name" autocomplete="given-name" placeholder="First Name" maxlength="120" required></label>
@@ -45,7 +46,7 @@
               <p class="sms-consent-note">Leave this box unchecked to send a message without requesting texts. This website does not send text messages; the form records your request for the campaign.</p>
             </div>
             <button class="button button-red" type="submit">Send message</button>
-            <p class="form-notice">Form delivery to the campaign inbox is not yet confirmed. To make sure your message is received, email <a href="mailto:ShawnPackardfor64@gmail.com">ShawnPackardfor64@gmail.com</a> directly. Read our <a href="../form-information/">form information</a>.</p>
+            <p class="form-status" role="status" aria-live="polite"></p>
           </form>
         </div>
       </div>
