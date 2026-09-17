@@ -14,9 +14,9 @@ To deploy a Worker code change, run `wrangler deploy` from this repository with 
 
 ## Contact and updates forms
 
-The GitHub Pages contact and email-updates forms submit to FormSubmit's AJAX endpoint, addressed to `ShawnPackardfor64@gmail.com`. The user reports that FormSubmit activation is complete; receipt in the campaign inbox has not been independently verified. The forms keep visitors on the page and display success only after FormSubmit returns a successful response, or an inline error otherwise. They disable FormSubmit's routine CAPTCHA with `_captcha=false` and include an invisible honeypot, though FormSubmit may still apply anti-spam limitations. The contact form has a separate, optional SMS opt-in checkbox; the email-updates form does not enroll people in texts. This site does not send texts or connect to a messaging provider.
+The GitHub Pages contact and email-updates forms submit to FormSubmit's AJAX endpoint, addressed to `ShawnPackardfor64@gmail.com`. The forms keep visitors on the page and display success only after FormSubmit returns a successful response, or an inline error otherwise. They disable FormSubmit's routine CAPTCHA with `_captcha=false` and include an invisible honeypot, though FormSubmit may still apply anti-spam limitations. The contact form has a separate, optional SMS opt-in checkbox; the email-updates form does not enroll people in texts. This site does not send texts or connect to a messaging provider.
 
-For an end-to-end delivery check, submit clearly marked fictional-data tests through both live forms and confirm the messages arrive in the campaign inbox. A successful FormSubmit response alone does not prove mailbox receipt.
+On September 17, 2026, one clearly marked fictional-data test through each live form returned inline success without a challenge or navigation, and both messages were found in the campaign Gmail inbox. That verifies the test journey, not a guarantee that every future message will be delivered.
 
 FormSubmit's documentation says it retains submissions for up to 30 days. The campaign should review the form-information notice and decide whether this third-party handling fits its privacy practices before collecting real supporter data. Do not put payment-card information, passwords, or secret keys in this repository or the forms.
 
