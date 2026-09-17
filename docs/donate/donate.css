@@ -33,14 +33,9 @@
 .donation-intro h2 { font-size: clamp(2rem, 3vw, 2.8rem); margin-bottom: 21px; }
 .donation-note a { color: var(--navy); font-weight: 700; }
 .donation-note { margin: 30px 0 0; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; line-height: 1.6; }
-.donation-amount-form label { display: block; margin-bottom: 9px; font-size: .88rem; font-weight: 700; color: var(--navy-dark); }
-.donation-amount-field { display: flex; align-items: center; width: 100%; margin-bottom: 18px; border: 1px solid #cbd2df; border-radius: 3px; background: #fff; }
-.donation-amount-field:focus-within { outline: 2px solid var(--navy); outline-offset: 2px; }
-.donation-amount-field span { padding-left: 16px; font-size: 1.5rem; font-weight: 700; color: var(--navy); }
-.donation-amount-field input { width: 100%; min-width: 0; padding: 12px 16px 12px 6px; border: 0; outline: 0; font-size: 1.5rem; font-weight: 700; color: var(--navy-dark); }
-.donation-amount-form .button { width: 100%; }
 .donation-status { margin: 17px 0 0; color: var(--navy); font-size: .86rem; }
 .donation-status:empty { display: none; }
+.donation-retry[hidden] { display: none; }
 .donation-checkout { margin-top: 22px; }
 .donation-checkout[hidden] { display: none; }
 .donation-return-panel { max-width: 680px; padding: 40px; background: #fff; border-top: 5px solid var(--red); box-shadow: var(--shadow); }
