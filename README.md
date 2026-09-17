@@ -1,6 +1,6 @@
 # Packard for 64 site recovery
 
-This is a private-preview reconstruction of the former campaign site. It includes Home, About Us, and Contact Us. The original logo and five recovered images are served locally from `public/assets/`.
+This is a private-preview reconstruction of the former campaign site. It includes Home, About Us, and Contact Us. The original logo and five recovered images are served locally from `dist/assets/`.
 
 The original host returned HTTP 403 during extraction. Search-indexed page content was available for `/`, `/About-us`, `/contact-us`, and `/donate`. The donation page, payment handling, privacy/terms pages, and the original campaign video are not implemented. The old forms are display-only and explicitly collect no data. This is not a pixel-certified copy; the full HTML/CSS and video asset were not recoverable.
 
@@ -22,4 +22,4 @@ The archived site contained links to `example.com` for Privacy Policy and Terms 
 | discover.jpeg | 690159698a87f3116bfa50c8.jpeg | AYCC photograph |
 | aycc.webp | 69015e0cff3e444f9ff059f1.webp | MMTC emblem |
 
-Run locally with any static server pointed at `public/`, e.g. `python -m http.server 4173 -d public`. Do not make this site public until the campaign has reviewed the content, assets, legal disclosures, forms, and missing video/donation destinations.
+Run locally with any static server pointed at `dist/`, e.g. `python -m http.server 4173 -d dist`. Do not make this site public until the campaign has reviewed the content, assets, legal disclosures, forms, and missing video/donation destinations.
