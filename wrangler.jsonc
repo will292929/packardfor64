@@ -1,0 +1,6 @@
+{
+  "name": "packardfor64-donations",
+  "main": "worker/checkout.js",
+  "compatibility_date": "2026-09-17",
+  "account_id": "a2dea53b081c7145763dacd09c46fa60"
+}

@@ -1,2 +1,4 @@
 /.preview/
 /assets/
+.dev.vars*
+.wrangler/
