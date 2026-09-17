@@ -1,8 +1,8 @@
-# Packard for 64 site recovery
+# Shawn Packard for State Representative District 64
 
-This repository contains a reconstruction of the former `packardfor64.com` campaign site. `docs/` is the GitHub Pages build; `dist/` is the earlier ChatGPT Sites build. The Pages build is designed to publish at `https://will292929.github.io/packardfor64/`.
+This repository contains the campaign website. `docs/` is the GitHub Pages build; `dist/` is an older, separate ChatGPT Sites preview. The public Pages site is `https://will292929.github.io/packardfor64/`.
 
-The recovered pages are Home, About Us, and Contact Us. The original logo and five recovered images are included in `docs/assets/`. The campaign video has been recovered from the public [Packard for 64 Facebook post](https://www.facebook.com/PackardFor64/videos/campaign-video/905877975531100/) and is hosted locally as an MP4 with a thumbnail, so the site uses a native player without a Facebook embed. Payment processing was not recoverable. Figures copied from the former site are marked unverified. This is not a pixel-certified reproduction.
+The site includes Home, About Us, Contact Us, Form Information, Privacy Policy, and Text Message Terms pages. The campaign video from the public [Packard for 64 Facebook post](https://www.facebook.com/PackardFor64/videos/campaign-video/905877975531100/) is hosted locally as an MP4 with a thumbnail, so the site uses a native player without a Facebook embed. Donation processing is not implemented, and no donation controls appear on the public site.
 
 ## Contact and updates forms
 
@@ -12,7 +12,7 @@ To finish activation:
 
 1. Ask the holder of `ShawnPackardfor64@gmail.com` to find FormSubmit's activation email (including Spam) and click its confirmation link.
 2. Submit a clearly marked, fictional-data test through each live form.
-3. Confirm both messages actually arrive in the campaign inbox. Only then remove the pending-delivery notice from the forms and `docs/form-information/`.
+3. Confirm both messages actually arrive in the campaign inbox. Only then remove the delivery warning from the forms, `docs/form-information/`, and the Privacy Policy.
 
 FormSubmit's documentation says it retains submissions for up to 30 days. The campaign should review the form-information notice and decide whether this third-party handling fits its privacy practices before collecting real supporter data. Do not put payment-card information, passwords, or secret keys in this repository or the forms.
 
