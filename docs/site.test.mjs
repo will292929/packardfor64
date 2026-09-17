@@ -72,6 +72,7 @@ test('donation page keeps the form and restored campaign story together', () => 
   assert.match(html, /portrait-donate\.jpg/);
   assert.match(html, /Follow on Facebook/);
   assert.match(html, /id="donation-form"/);
+  assert.ok(html.indexOf('id="donation-form"') < html.indexOf('class="donation-story"'));
   assert.match(html, /data-amount="100" class="selected"/);
   assert.match(css, /grid-template-areas: "story form"/);
   assert.match(css, /grid-template-areas: "form" "story"/);
