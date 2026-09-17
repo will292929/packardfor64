@@ -7,7 +7,7 @@
   <title>Donate | Shawn Packard for District 64</title>
   <link rel="icon" href="../assets/logo.png">
   <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="./donate.css?v=20260917c">
+  <link rel="stylesheet" href="./donate.css?v=20260917d">
   <script src="https://js.stripe.com/clover/stripe.js" defer></script>
   <script src="./donate.js?v=20260917c" defer></script>
   <script src="../site.js" defer></script>
@@ -25,6 +25,19 @@
 
   <main class="donation-main">
     <div class="donation-shell">
+      <div class="donation-layout">
+      <aside class="donation-story" aria-label="About the campaign">
+        <p class="donation-story-kicker">Donate today</p>
+        <h2>Support Local Leadership</h2>
+        <p>This campaign is built around conversations with the people of District 64. Supporters help us reach neighbors, organize local events, and keep Shawn's message in front of Maine voters.</p>
+        <p>If you believe in honest leadership, stronger communities, and a better future for Maine families, we'd be grateful to hear from you.</p>
+        <img class="donation-story-photo" src="../assets/portrait-donate.jpg" alt="Shawn Packard outside a public building" loading="lazy">
+        <div class="donation-follow">
+          <h3>Stay informed</h3>
+          <p>Follow the campaign for news, events, and ways to get involved.</p>
+          <a class="donation-follow-link" href="https://www.facebook.com/PackardFor64/" target="_blank" rel="noopener noreferrer">Follow on Facebook <span aria-hidden="true">↗</span></a>
+        </div>
+      </aside>
       <form id="donation-form" class="donation-card">
         <p class="donation-kicker">Support Shawn Packard for State Representative</p>
         <h1>Make a Contribution</h1>
@@ -101,6 +114,7 @@
         <button id="donate-button" class="donate-button" type="submit">Donate <span id="payment-total">$100.00</span></button>
         <p class="donation-policy"><a href="../privacy/">Privacy Policy</a></p>
       </form>
+      </div>
     </div>
   </main>
 
