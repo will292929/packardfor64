@@ -7,12 +7,12 @@
   <title>Donate | Shawn Packard for District 64</title>
   <link rel="icon" href="../assets/logo.png">
   <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="./donate.css?v=20260917b">
-  <script src="https://js.stripe.com/v3/" defer></script>
-  <script src="./donate.js?v=20260917b" defer></script>
+  <link rel="stylesheet" href="./donate.css?v=20260917c">
+  <script src="https://js.stripe.com/clover/stripe.js" defer></script>
+  <script src="./donate.js?v=20260917c" defer></script>
   <script src="../site.js" defer></script>
 </head>
-<body>
+<body class="donation-page">
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="../" aria-label="Shawn Packard for State Representative home"><img src="../assets/logo.png" alt="Shawn Packard campaign logo"></a>
@@ -23,44 +23,85 @@
     </div>
   </header>
 
-  <main>
-    <section class="page-banner donation-banner">
-      <div class="container">
-        <p class="eyebrow">Shawn Packard · Maine House District 64</p>
-        <h1>Support the Campaign</h1>
-        <p>Grassroots support helps Shawn meet voters, share his priorities, and bring community-focused leadership to Augusta. Every contribution helps keep the campaign moving.</p>
-      </div>
-    </section>
+  <main class="donation-main">
+    <div class="donation-shell">
+      <form id="donation-form" class="donation-card">
+        <p class="donation-kicker">Support Shawn Packard for State Representative</p>
+        <h1>Make a Contribution</h1>
+        <p class="donation-lead">Your support helps us reach voters across District 64.</p>
 
-    <section class="donation-section section-pad">
-      <div class="container donation-grid">
-        <div class="donation-story section-copy">
-          <p class="eyebrow red">Donate today</p>
-          <h2>Support Local Leadership</h2>
-          <p>This campaign is built around conversations with the people of District 64. Supporters help us reach neighbors, organize local events, and keep Shawn's message in front of Maine voters.</p>
-          <p>If you believe in honest leadership, stronger communities, and a better future for Maine families, we'd be grateful to hear from you.</p>
-          <div class="donation-photo"><img src="../assets/portrait.jpeg" alt="Shawn Packard outside a public building" loading="lazy"></div>
-          <div class="donation-follow">
-            <h3>Stay informed</h3>
-            <p>Follow the campaign for news, events, and ways to get involved.</p>
-            <a class="button button-navy" href="https://www.facebook.com/PackardFor64/" target="_blank" rel="noopener noreferrer">Follow on Facebook <span aria-hidden="true">↗</span></a>
-          </div>
+        <label class="donation-field" for="full-name">Full Name <span aria-hidden="true">*</span>
+          <input id="full-name" name="fullName" type="text" autocomplete="name" maxlength="120" placeholder="Full Name" required>
+        </label>
+
+        <h2 class="donation-subhead">Address</h2>
+        <label class="donation-field" for="street-address">Street Address <span aria-hidden="true">*</span>
+          <input id="street-address" name="streetAddress" type="text" autocomplete="address-line1" maxlength="160" placeholder="Street address" required>
+        </label>
+        <label class="donation-field" for="address-line2">Apartment, suite, etc. <span class="optional">(optional)</span>
+          <input id="address-line2" name="addressLine2" type="text" autocomplete="address-line2" maxlength="160" placeholder="Apartment or suite">
+        </label>
+        <div class="donation-pair">
+          <label class="donation-field" for="city">City <span aria-hidden="true">*</span>
+            <input id="city" name="city" type="text" autocomplete="address-level2" maxlength="100" placeholder="City" required>
+          </label>
+          <label class="donation-field" for="state">State <span aria-hidden="true">*</span>
+            <input id="state" name="state" type="text" autocomplete="address-level1" maxlength="60" placeholder="State" required>
+          </label>
+        </div>
+        <div class="donation-pair">
+          <label class="donation-field" for="country">Country <span aria-hidden="true">*</span>
+            <select id="country" name="country" required><option value="US" selected>United States</option></select>
+          </label>
+          <label class="donation-field" for="postal-code">Postal Code <span aria-hidden="true">*</span>
+            <input id="postal-code" name="postalCode" type="text" autocomplete="postal-code" inputmode="numeric" pattern="[0-9-]{5,10}" maxlength="10" placeholder="Postal code" required>
+          </label>
         </div>
 
-        <div class="donation-panel">
-          <div id="donation-embed" class="donation-embed" aria-label="Campaign contribution options">
-            <div class="donation-intro">
-              <p class="eyebrow red">Make an impact</p>
-              <h2>Donate Today</h2>
-            </div>
-            <p id="checkout-status" class="donation-status" role="status" aria-live="polite">Loading secure donation form…</p>
-            <button id="checkout-retry" class="button button-red donation-retry" type="button" hidden>Retry secure donation form</button>
-            <div id="checkout" class="donation-checkout" hidden></div>
+        <label class="donation-field" for="occupation">Occupation <span aria-hidden="true">*</span>
+          <input id="occupation" name="occupation" type="text" autocomplete="organization-title" maxlength="120" placeholder="Occupation" required>
+        </label>
+        <label class="donation-field" for="employer">Employer or principal place of business <span aria-hidden="true">*</span>
+          <input id="employer" name="employer" type="text" autocomplete="organization" maxlength="160" placeholder="Employer" required>
+        </label>
+        <label class="donation-field" for="phone">Phone <span aria-hidden="true">*</span>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" pattern="[+()0-9.\s-]{7,40}" maxlength="40" placeholder="Phone" required>
+        </label>
+        <label class="donation-field" for="email">Email <span aria-hidden="true">*</span>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="Email" required>
+        </label>
+
+        <fieldset class="donation-amounts">
+          <legend>Your contribution will benefit Shawn Packard for State Rep <span aria-hidden="true">*</span></legend>
+          <div class="amount-grid" role="group" aria-label="Contribution amount">
+            <button type="button" data-amount="5">$5</button>
+            <button type="button" data-amount="25">$25</button>
+            <button type="button" data-amount="50">$50</button>
+            <button type="button" data-amount="100" class="selected" aria-pressed="true">$100</button>
+            <button type="button" data-amount="250">$250</button>
+            <button type="button" data-amount="500">$500</button>
+            <button type="button" id="other-amount-button">Other amount</button>
           </div>
-          <p class="donation-note"><a href="../privacy/">Privacy Policy</a></p>
+          <label class="donation-field other-amount-field" for="other-amount" hidden>Other amount ($5–$500)
+            <input id="other-amount" name="otherAmount" type="number" min="5" max="500" step="0.01" inputmode="decimal" placeholder="Enter amount">
+          </label>
+        </fieldset>
+
+        <label class="donation-field" for="billing-frequency">Billing Frequency
+          <select id="billing-frequency" disabled><option>Once</option></select>
+        </label>
+
+        <h2 class="donation-subhead">Payment method</h2>
+        <div class="payment-area">
+          <p id="payment-hint">Complete the required fields above to load secure payment.</p>
+          <div id="payment-element"></div>
         </div>
-      </div>
-    </section>
+        <p id="checkout-status" class="donation-status" role="status" aria-live="polite"></p>
+        <p class="donation-security">Secure payment powered by Stripe · Maximum $500 per contribution.</p>
+        <button id="donate-button" class="donate-button" type="submit">Donate <span id="payment-total">$100.00</span></button>
+        <p class="donation-policy"><a href="../privacy/">Privacy Policy</a></p>
+      </form>
+    </div>
   </main>
 
   <footer class="site-footer">

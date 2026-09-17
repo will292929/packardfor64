@@ -2,6 +2,7 @@ const SITE_ORIGIN = "https://will292929.github.io";
 const RETURN_URL = `${SITE_ORIGIN}/packardfor64/donate/return/?session_id={CHECKOUT_SESSION_ID}`;
 const MIN_CENTS = 500;
 const MAX_CENTS = 50000;
+const STRIPE_VERSION = "2025-09-30.clover";
 
 function headers(origin) {
   const result = new Headers({
@@ -52,10 +53,82 @@ export function sessionParameters(amountCents) {
   return params;
 }
 
+export function elementsSessionParameters(amountCents) {
+  return new URLSearchParams({
+    mode: "payment",
+    ui_mode: "custom",
+    return_url: RETURN_URL,
+    "line_items[0][price_data][currency]": "usd",
+    "line_items[0][price_data][unit_amount]": String(amountCents),
+    "line_items[0][price_data][product_data][name]": "2026 General Election Contribution",
+    "line_items[0][quantity]": "1",
+    "metadata[election]": "2026-general",
+    "payment_intent_data[metadata][election]": "2026-general"
+  });
+}
+
+const textFields = {
+  fullName: 120, streetAddress: 160, addressLine2: 160, city: 100,
+  state: 60, country: 2, postalCode: 20, occupation: 120,
+  employer: 160, phone: 40, email: 254
+};
+
+export function validateDonor(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const donor = {};
+  for (const [field, limit] of Object.entries(textFields)) {
+    const raw = value[field];
+    if (typeof raw !== "string" || raw.length > limit) return null;
+    donor[field] = raw.trim();
+    if (field !== "addressLine2" && !donor[field]) return null;
+  }
+  if (donor.country !== "US" || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(donor.email)
+    || !/^[+()\d.\s-]{7,40}$/.test(donor.phone)
+    || !/^[\d-]{5,10}$/.test(donor.postalCode)) return null;
+  return donor;
+}
+
+async function stripeSession(fetchStripe, secret, params) {
+  let response;
+  try {
+    response = await fetchStripe("https://api.stripe.com/v1/checkout/sessions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secret}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Stripe-Version": STRIPE_VERSION
+      },
+      body: params.toString()
+    });
+  } catch {
+    return null;
+  }
+  if (!response.ok) {
+    let stripeError;
+    try { stripeError = (await response.json()).error; } catch { /* no safe error body */ }
+    console.error("Stripe checkout session rejected", response.status,
+      response.headers.get("Request-Id") || "no request id",
+      stripeError?.code || stripeError?.type || "unknown error",
+      stripeError?.param || "no parameter");
+    return null;
+  }
+  return response.json();
+}
+
+async function saveDonor(db, sessionId, amountCents, donor) {
+  await db.prepare(`INSERT INTO donor_submissions
+    (session_id, amount_cents, full_name, street_address, address_line2, city,
+     state, country, postal_code, occupation, employer, phone, email)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+    .bind(sessionId, amountCents, donor.fullName, donor.streetAddress,
+      donor.addressLine2, donor.city, donor.state, donor.country, donor.postalCode,
+      donor.occupation, donor.employer, donor.phone, donor.email).run();
+}
+
 export async function handleRequest(request, env, fetchStripe = fetch) {
   const url = new URL(request.url);
   const origin = request.headers.get("Origin");
-  if (url.pathname !== "/checkout-session" && url.pathname !== "/session-status") {
+  if (!["/checkout-session", "/elements-session", "/donor-details", "/session-status"].includes(url.pathname)) {
     return json(404, { error: "Not found" }, origin);
   }
   if (origin !== SITE_ORIGIN) {
@@ -80,7 +153,7 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
       stripeResponse = await fetchStripe(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
         headers: {
           Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
-          "Stripe-Version": "2025-09-30.clover"
+          "Stripe-Version": STRIPE_VERSION
         }
       });
     } catch {
@@ -90,8 +163,16 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
       return json(502, { error: "Could not check contribution" }, origin);
     }
     const session = await stripeResponse.json();
-    if (session.metadata?.election !== "2026-general" || session.ui_mode !== "embedded") {
+    if (session.metadata?.election !== "2026-general" || !["embedded", "custom"].includes(session.ui_mode)) {
       return json(404, { error: "Session not found" }, origin);
+    }
+    if (session.ui_mode === "custom" && env.DONORS && session.payment_status === "paid") {
+      try {
+        await env.DONORS.prepare(`UPDATE donor_submissions SET payment_status = 'paid',
+          updated_at = CURRENT_TIMESTAMP WHERE session_id = ?`).bind(sessionId).run();
+      } catch {
+        console.error("Could not mark donor submission paid");
+      }
     }
     return json(200, { status: session.status, paymentStatus: session.payment_status }, origin);
   }
@@ -102,15 +183,35 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
     return json(415, { error: "JSON required" }, origin);
   }
   const raw = await request.text();
-  if (raw.length > 1024) {
+  if (raw.length > 4096) {
     return json(413, { error: "Request too large" }, origin);
   }
-  let amountCents;
+  let payload;
   try {
-    ({ amountCents } = JSON.parse(raw));
+    payload = JSON.parse(raw);
   } catch {
     return json(400, { error: "Invalid JSON" }, origin);
   }
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return json(400, { error: "Invalid JSON" }, origin);
+  }
+  if (url.pathname === "/donor-details") {
+    const donor = validateDonor(payload.donor);
+    if (!donor || !/^cs_(live|test)_[A-Za-z0-9]+$/.test(payload.sessionId || "") || !env.DONORS) {
+      return json(400, { error: "Valid donor details are required" }, origin);
+    }
+    const result = await env.DONORS.prepare(`UPDATE donor_submissions SET full_name = ?,
+      street_address = ?, address_line2 = ?, city = ?, state = ?, country = ?,
+      postal_code = ?, occupation = ?, employer = ?, phone = ?, email = ?,
+      updated_at = CURRENT_TIMESTAMP WHERE session_id = ? AND payment_status = 'pending'`)
+      .bind(donor.fullName, donor.streetAddress, donor.addressLine2, donor.city,
+        donor.state, donor.country, donor.postalCode, donor.occupation,
+        donor.employer, donor.phone, donor.email, payload.sessionId).run();
+    return result.meta.changes === 1
+      ? json(200, { saved: true }, origin)
+      : json(404, { error: "Session not found" }, origin);
+  }
+  const { amountCents } = payload;
   if (!Number.isInteger(amountCents) || amountCents < MIN_CENTS || amountCents > MAX_CENTS) {
     return json(400, { error: "Enter an amount from $5 to $500" }, origin);
   }
@@ -118,27 +219,29 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
     return json(503, { error: "Checkout is temporarily unavailable" }, origin);
   }
 
-  let stripeResponse;
-  try {
-    stripeResponse = await fetchStripe("https://api.stripe.com/v1/checkout/sessions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Stripe-Version": "2025-09-30.clover"
-      },
-      body: sessionParameters(amountCents).toString()
-    });
-  } catch {
-    return json(502, { error: "Could not start checkout" }, origin);
+  if (url.pathname === "/elements-session") {
+    const donor = validateDonor(payload.donor);
+    if (!donor) return json(400, { error: "Valid donor details are required" }, origin);
+    if (!env.DONORS) return json(503, { error: "Checkout is temporarily unavailable" }, origin);
+    const session = await stripeSession(fetchStripe, env.STRIPE_SECRET_KEY,
+      elementsSessionParameters(amountCents));
+    if (!session || typeof session.client_secret !== "string" || typeof session.id !== "string") {
+      return json(502, { error: "Could not start checkout" }, origin);
+    }
+    try {
+      await saveDonor(env.DONORS, session.id, amountCents, donor);
+    } catch {
+      console.error("Could not save donor submission");
+      return json(503, { error: "Could not save donor details" }, origin);
+    }
+    return json(200, { clientSecret: session.client_secret, sessionId: session.id }, origin);
   }
 
-  if (!stripeResponse.ok) {
-    console.error("Stripe checkout session rejected", stripeResponse.status,
-      stripeResponse.headers.get("Request-Id") || "no request id");
+  const session = await stripeSession(fetchStripe, env.STRIPE_SECRET_KEY,
+    sessionParameters(amountCents));
+  if (!session) {
     return json(502, { error: "Could not start checkout" }, origin);
   }
-  const session = await stripeResponse.json();
   if (typeof session.client_secret !== "string") {
     return json(502, { error: "Could not start checkout" }, origin);
   }

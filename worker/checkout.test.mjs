@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { handleRequest, sessionParameters } from "./checkout.js";
+import { elementsSessionParameters, handleRequest, sessionParameters, validateDonor } from "./checkout.js";
 
 const url = "https://packardfor64-donations.example.workers.dev/checkout-session";
 const origin = "https://will292929.github.io";
@@ -23,6 +23,43 @@ test("builds a one-time embedded session with required donor fields", () => {
   assert.equal(params.get("custom_fields[0][optional]"), "false");
   assert.equal(params.get("custom_fields[1][label][custom]"), "Employer or principal place of business");
   assert.equal(params.get("custom_fields[1][optional]"), "false");
+});
+
+const donor = {
+  fullName: "Test Donor", streetAddress: "123 Example Street", addressLine2: "",
+  city: "Waterville", state: "ME", country: "US", postalCode: "04901",
+  occupation: "Tester", employer: "Example Organization", phone: "2075550123",
+  email: "test@example.com"
+};
+
+test("builds a custom Stripe session without donor PII in parameters", () => {
+  const params = elementsSessionParameters(10000);
+  assert.equal(params.get("ui_mode"), "custom");
+  assert.equal(params.get("line_items[0][price_data][unit_amount]"), "10000");
+  assert.equal(params.get("custom_fields[0][key]"), null);
+  assert.equal(params.toString().includes(donor.email), false);
+  assert.deepEqual(validateDonor(donor), donor);
+  assert.equal(validateDonor({ ...donor, occupation: "" }), null);
+  assert.equal(validateDonor({ ...donor, country: "GB" }), null);
+});
+
+test("stores required donor details before returning custom checkout secrets", async () => {
+  let saved;
+  const db = {
+    prepare: () => ({ bind: (...args) => ({ run: async () => { saved = args; } }) })
+  };
+  const response = await handleRequest(new Request(url.replace("checkout-session", "elements-session"), {
+    method: "POST", headers: { Origin: origin, "Content-Type": "application/json" },
+    body: JSON.stringify({ amountCents: 10000, donor })
+  }), { STRIPE_SECRET_KEY: "sk_test_not_real", DONORS: db }, async (_url, options) => {
+    assert.equal(new URLSearchParams(options.body).get("ui_mode"), "custom");
+    return new Response(JSON.stringify({ client_secret: "cs_test_abc_secret_xyz", id: "cs_test_abc" }));
+  });
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).sessionId, "cs_test_abc");
+  assert.equal(saved[0], "cs_test_abc");
+  assert.equal(saved[1], 10000);
+  assert.equal(saved[2], donor.fullName);
 });
 
 test("rejects amounts outside the payment range before contacting Stripe", async () => {

@@ -2,5 +2,12 @@
   "name": "packardfor64-donations",
   "main": "worker/checkout.js",
   "compatibility_date": "2026-09-17",
-  "account_id": "a2dea53b081c7145763dacd09c46fa60"
+  "account_id": "a2dea53b081c7145763dacd09c46fa60",
+  "d1_databases": [
+    {
+      "binding": "DONORS",
+      "database_name": "packardfor64-donors",
+      "database_id": "859e3dc7-1453-4d05-a308-039b2e6f1610"
+    }
+  ]
 }
