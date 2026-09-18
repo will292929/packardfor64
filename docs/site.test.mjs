@@ -21,6 +21,7 @@ function setup(response) {
   };
   const requests = [];
   runInNewContext(source, {
+    window: { location: { href: 'https://www.packardfor64.com/contact-us/' } },
     document: {
       querySelector: () => null,
       querySelectorAll: () => [form]
@@ -48,6 +49,7 @@ test('successful submission stays on page and acknowledges FormSubmit acceptance
   assert.equal(prevented, true);
   assert.equal(page.requests[0].url, 'https://formsubmit.co/ajax/ShawnPackardfor64@gmail.com');
   assert.equal(JSON.parse(page.requests[0].options.body)._captcha, 'false');
+  assert.equal(JSON.parse(page.requests[0].options.body)._url, 'https://www.packardfor64.com/contact-us/');
   assert.equal(page.form.resetCount, 1);
   assert.equal(page.status.className, 'form-status is-success');
   assert.equal(page.status.textContent, 'Thanks — your message was submitted.');

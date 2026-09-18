@@ -35,10 +35,12 @@ for (const form of document.querySelectorAll('form[data-formsubmit]')) {
     try {
       const endpoint = new URL(form.action);
       endpoint.pathname = `/ajax${endpoint.pathname}`;
+      const fields = Object.fromEntries(new FormData(form));
+      fields._url = window.location.href;
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        body: JSON.stringify(fields)
       });
       const result = await response.json();
       if (!response.ok || (result.success !== true && result.success !== 'true')) {

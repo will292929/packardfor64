@@ -1,10 +1,17 @@
-const SITE_ORIGIN = "https://will292929.github.io";
-const RETURN_URL = `${SITE_ORIGIN}/packardfor64/donate/return/?session_id={CHECKOUT_SESSION_ID}`;
+const PAGES_ORIGIN = "https://will292929.github.io";
+const SITE_PATHS = new Map([
+  [PAGES_ORIGIN, "/packardfor64"],
+  ["https://www.packardfor64.com", ""]
+]);
 const MIN_CENTS = 500;
 const MAX_CENTS = 50000;
 const STRIPE_VERSION = "2025-09-30.clover";
 const FORM_EMAIL = "ShawnPackardfor64@gmail.com";
 const FORM_URL = `https://formsubmit.co/ajax/${FORM_EMAIL}`;
+
+function returnUrl(origin) {
+  return `${origin}${SITE_PATHS.get(origin)}/donate/return/?session_id={CHECKOUT_SESSION_ID}`;
+}
 
 function headers(origin) {
   const result = new Headers({
@@ -12,8 +19,8 @@ function headers(origin) {
     "Cache-Control": "no-store",
     "Vary": "Origin"
   });
-  if (origin === SITE_ORIGIN) {
-    result.set("Access-Control-Allow-Origin", SITE_ORIGIN);
+  if (SITE_PATHS.has(origin)) {
+    result.set("Access-Control-Allow-Origin", origin);
     result.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     result.set("Access-Control-Allow-Headers", "Content-Type");
   }
@@ -24,13 +31,13 @@ function json(status, value, origin) {
   return new Response(JSON.stringify(value), { status, headers: headers(origin) });
 }
 
-export function sessionParameters(amountCents) {
+export function sessionParameters(amountCents, origin = PAGES_ORIGIN) {
   const params = new URLSearchParams({
     mode: "payment",
     ui_mode: "embedded",
     submit_type: "donate",
     redirect_on_completion: "if_required",
-    return_url: RETURN_URL,
+    return_url: returnUrl(origin),
     billing_address_collection: "required",
     "name_collection[individual][enabled]": "true",
     "name_collection[individual][optional]": "false",
@@ -55,11 +62,11 @@ export function sessionParameters(amountCents) {
   return params;
 }
 
-export function elementsSessionParameters(amountCents) {
+export function elementsSessionParameters(amountCents, origin = PAGES_ORIGIN) {
   return new URLSearchParams({
     mode: "payment",
     ui_mode: "custom",
-    return_url: RETURN_URL,
+    return_url: returnUrl(origin),
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][unit_amount]": String(amountCents),
     "line_items[0][price_data][product_data][name]": "2026 General Election Contribution",
@@ -136,8 +143,8 @@ async function sendPaidDonationEmail(row, fetchMail) {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Origin: SITE_ORIGIN,
-      Referer: `${SITE_ORIGIN}/packardfor64/donate/`
+      Origin: PAGES_ORIGIN,
+      Referer: `${PAGES_ORIGIN}/packardfor64/donate/`
     },
     body: JSON.stringify({
       _subject: `Packard for 64 — paid donation ${row.session_id}`,
@@ -234,7 +241,7 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
   if (!["/checkout-session", "/elements-session", "/donor-details", "/session-status"].includes(url.pathname)) {
     return json(404, { error: "Not found" }, origin);
   }
-  if (origin !== SITE_ORIGIN) {
+  if (!SITE_PATHS.has(origin)) {
     return json(403, { error: "Origin not allowed" }, origin);
   }
   if (request.method === "OPTIONS") {
@@ -327,7 +334,7 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
     if (!donor) return json(400, { error: "Valid donor details are required" }, origin);
     if (!env.DONORS) return json(503, { error: "Checkout is temporarily unavailable" }, origin);
     const session = await stripeSession(fetchStripe, env.STRIPE_SECRET_KEY,
-      elementsSessionParameters(amountCents));
+      elementsSessionParameters(amountCents, origin));
     if (!session || typeof session.client_secret !== "string" || typeof session.id !== "string") {
       return json(502, { error: "Could not start checkout" }, origin);
     }
@@ -341,7 +348,7 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
   }
 
   const session = await stripeSession(fetchStripe, env.STRIPE_SECRET_KEY,
-    sessionParameters(amountCents));
+    sessionParameters(amountCents, origin));
   if (!session) {
     return json(502, { error: "Could not start checkout" }, origin);
   }

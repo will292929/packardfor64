@@ -43,6 +43,14 @@ test("builds a custom Stripe session without donor PII in parameters", () => {
   assert.equal(validateDonor({ ...donor, country: "GB" }), null);
 });
 
+test("uses the custom domain root for Stripe's return URL", () => {
+  const params = elementsSessionParameters(10000, "https://www.packardfor64.com");
+  assert.equal(params.get("return_url"),
+    "https://www.packardfor64.com/donate/return/?session_id={CHECKOUT_SESSION_ID}");
+  assert.equal(elementsSessionParameters(10000).get("return_url"),
+    "https://will292929.github.io/packardfor64/donate/return/?session_id={CHECKOUT_SESSION_ID}");
+});
+
 test("stores required donor details before returning custom checkout secrets", async () => {
   let saved;
   const db = {
@@ -77,6 +85,17 @@ test("requires the published site origin", async () => {
   });
   assert.equal(response.status, 403);
   assert.equal(response.headers.get("Access-Control-Allow-Origin"), null);
+});
+
+test("allows the custom domain and returns its own CORS origin", async () => {
+  const response = await handleRequest(request(2500, { Origin: "https://www.packardfor64.com" }),
+    { STRIPE_SECRET_KEY: "sk_test_not_real" }, async (_url, options) => {
+      assert.equal(new URLSearchParams(options.body).get("return_url"),
+        "https://www.packardfor64.com/donate/return/?session_id={CHECKOUT_SESSION_ID}");
+      return new Response(JSON.stringify({ client_secret: "cs_test_123_secret_abc" }));
+    });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("Access-Control-Allow-Origin"), "https://www.packardfor64.com");
 });
 
 test("returns only the client secret to the site", async () => {
