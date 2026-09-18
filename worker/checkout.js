@@ -1,6 +1,7 @@
 const PAGES_ORIGIN = "https://will292929.github.io";
 const SITE_PATHS = new Map([
   [PAGES_ORIGIN, "/packardfor64"],
+  ["https://packardfor64.com", ""],
   ["https://www.packardfor64.com", ""]
 ]);
 const MIN_CENTS = 500;
