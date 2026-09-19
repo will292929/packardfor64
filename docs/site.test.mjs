@@ -79,3 +79,10 @@ test('donation page keeps the form and restored campaign story together', () => 
   assert.match(css, /grid-template-areas: "story form"/);
   assert.match(css, /grid-template-areas: "form" "story"/);
 });
+
+test('homepage highlights Next Generation in campaign red', () => {
+  const html = readFileSync(new URL('./index.html', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
+  assert.match(html, /<strong class="hero-accent">Next Generation<\/strong>/);
+  assert.match(css, /\.hero-accent\{[^}]*color:var\(--red\)/);
+});
