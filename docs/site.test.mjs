@@ -86,3 +86,24 @@ test('homepage highlights Next Generation in campaign red', () => {
   assert.match(html, /<strong class="hero-accent">Next Generation<\/strong>/);
   assert.match(css, /\.hero-accent\{[^}]*color:var\(--red\)/);
 });
+
+test('homepage uses the supplied Waterville photos as readable text backdrops', () => {
+  const html = readFileSync(new URL('./index.html', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('./styles.css', import.meta.url), 'utf8');
+  assert.match(html, /photo-text-section-river/);
+  assert.match(html, /photo-text-section-downtown/);
+  assert.match(css, /waterville-river-dusk\.jpg/);
+  assert.match(css, /waterville-downtown-night\.jpg/);
+  assert.match(css, /\.backdrop-copy\{[^}]*background:rgba\(7,24,54,\.84\)/);
+});
+
+test('homepage includes a four-item accessible endorsement carousel', () => {
+  const html = readFileSync(new URL('./index.html', import.meta.url), 'utf8');
+  const script = readFileSync(new URL('./site.js', import.meta.url), 'utf8');
+  assert.equal((html.match(/class="endorsement-card"/g) || []).length, 4);
+  assert.match(html, /data-endorsement-prev/);
+  assert.match(html, /data-endorsement-next/);
+  assert.match(html, /aria-live="polite"[^>]*data-endorsement-status/);
+  assert.match(script, /prefers-reduced-motion: reduce/);
+  assert.match(script, /6500/);
+});

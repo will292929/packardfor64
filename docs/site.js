@@ -61,3 +61,57 @@ for (const form of document.querySelectorAll('form[data-formsubmit]')) {
     }
   });
 }
+
+const endorsementCarousel = document.querySelector('[data-endorsement-carousel]');
+
+if (endorsementCarousel) {
+  const track = endorsementCarousel.querySelector('[data-endorsement-track]');
+  const cards = [...track.querySelectorAll('.endorsement-card')];
+  const previousButton = endorsementCarousel.querySelector('[data-endorsement-prev]');
+  const nextButton = endorsementCarousel.querySelector('[data-endorsement-next]');
+  const status = document.querySelector('[data-endorsement-status]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let activeIndex = 0;
+  let autoplayTimer;
+
+  const updateStatus = () => {
+    if (status) status.textContent = `Endorsement ${activeIndex + 1} of ${cards.length}`;
+  };
+
+  const showCard = (index, announce = true) => {
+    activeIndex = (index + cards.length) % cards.length;
+    track.scrollTo({
+      left: cards[activeIndex].offsetLeft - track.offsetLeft,
+      behavior: reduceMotion.matches ? 'auto' : 'smooth'
+    });
+    if (announce) updateStatus();
+  };
+
+  const stopAutoplay = () => {
+    window.clearInterval(autoplayTimer);
+  };
+
+  const startAutoplay = () => {
+    stopAutoplay();
+    if (!reduceMotion.matches && !document.hidden) {
+      autoplayTimer = window.setInterval(() => showCard(activeIndex + 1), 6500);
+    }
+  };
+
+  previousButton.addEventListener('click', () => {
+    showCard(activeIndex - 1);
+    startAutoplay();
+  });
+  nextButton.addEventListener('click', () => {
+    showCard(activeIndex + 1);
+    startAutoplay();
+  });
+  endorsementCarousel.addEventListener('mouseenter', stopAutoplay);
+  endorsementCarousel.addEventListener('mouseleave', startAutoplay);
+  endorsementCarousel.addEventListener('focusin', stopAutoplay);
+  endorsementCarousel.addEventListener('focusout', startAutoplay);
+  reduceMotion.addEventListener('change', startAutoplay);
+  document.addEventListener('visibilitychange', startAutoplay);
+  updateStatus();
+  startAutoplay();
+}

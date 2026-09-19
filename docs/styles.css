@@ -4,6 +4,47 @@
 @media(max-width:700px){.container{width:min(100% - 32px,540px)}.section-pad{padding:60px 0}.header-inner{min-height:78px}.menu-toggle{display:flex;align-items:center;gap:9px;background:transparent;border:0;color:var(--navy);font-weight:800;padding:8px}.menu-bars{width:23px;height:16px;border-top:2px solid currentColor;border-bottom:2px solid currentColor;position:relative}.menu-bars::after{content:"";position:absolute;top:6px;left:0;right:0;border-top:2px solid currentColor}.site-nav{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;padding:20px 28px 28px;box-shadow:var(--shadow);align-items:stretch;flex-direction:column;gap:18px}.site-nav.open{display:flex}.nav-unavailable{align-self:start}.hero-grid{display:flex;flex-direction:column;align-items:stretch;min-height:0}.hero-copy{padding:58px 0 20px}.hero-person{height:420px;max-width:85%;align-self:center}.hero h1{font-size:3.4rem}.stats-grid{gap:0}.stats-grid>div{padding:8px 4px}.stats strong{font-size:2.1rem}.stats span{font-size:.64rem}.about-grid,.signup-grid,.contact-grid{grid-template-columns:1fr;gap:42px}.about-image-wrap>img{max-height:590px}.experience-badge{right:0}.service-cards{grid-template-columns:1fr;gap:20px}.service-card img{height:220px}.footer-grid{grid-template-columns:1fr 1fr;gap:35px}.footer-grid>div:first-child{grid-column:1/-1}.footer-bottom{flex-direction:column}.page-banner{padding:58px 0}.form-card{padding:24px}.video-placeholder .play-symbol{width:62px;height:62px;font-size:1.5rem}}
 @media(max-width:420px){.hero h1{font-size:2.8rem}.hero-person{height:340px}.form-row{grid-template-columns:1fr;gap:0}.footer-grid{grid-template-columns:1fr}.footer-grid>div:first-child{grid-column:auto}}
 .hero-accent{display:block;color:var(--red);font:inherit}
+
+/* Waterville photo-backed story sections */
+.photo-text-section{position:relative;isolation:isolate;background-position:center;background-size:cover;background-repeat:no-repeat}
+.photo-text-section::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,rgba(4,18,43,.84),rgba(10,28,58,.55))}
+.photo-text-section-river{background-image:url("./assets/waterville-river-dusk.jpg")}
+.photo-text-section-river::before{background:linear-gradient(100deg,rgba(5,18,42,.78),rgba(7,25,54,.58))}
+.photo-text-section-downtown{background-image:url("./assets/waterville-downtown-night.jpg");background-position:center 54%}
+.photo-text-section-downtown::before{background:linear-gradient(rgba(5,17,40,.82),rgba(8,26,59,.9))}
+.photo-text-section-river .about-grid{display:flex;justify-content:flex-end}
+.backdrop-copy{width:min(650px,100%);padding:42px;background:rgba(7,24,54,.84);border-top:5px solid var(--red);box-shadow:0 18px 48px rgba(0,0,0,.28);backdrop-filter:blur(6px)}
+.photo-text-section .backdrop-copy h2,.photo-text-section .backdrop-copy blockquote{color:#fff}
+.photo-text-section .backdrop-copy p{color:#e9eef8}
+.photo-text-section .backdrop-copy blockquote{border-left-color:var(--red)}
+
+/* Accessible, auto-advancing endorsement queue */
+.endorsements-section{color:#fff;overflow:hidden}
+.endorsements-wrap{position:relative}
+.endorsements-heading{max-width:760px;margin:0 auto 34px;text-align:center}
+.endorsements-heading h2{color:#fff;margin-bottom:14px}
+.endorsements-heading>p:last-child{margin-bottom:0;color:#e7edf8}
+.endorsement-carousel{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:16px;align-items:center}
+.endorsement-track{display:flex;gap:22px;overflow-x:auto;padding:8px 4px 26px;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-inline:contain}
+.endorsement-track::-webkit-scrollbar{display:none}
+.endorsement-card{flex:0 0 calc(50% - 11px);min-height:335px;padding:36px;display:flex;flex-direction:column;scroll-snap-align:start;background:rgba(255,255,255,.96);color:var(--text);border-top:5px solid var(--red);box-shadow:0 18px 45px rgba(0,0,0,.28)}
+.endorsement-card blockquote{margin:12px 0 24px;color:var(--navy-dark);font-size:1.15rem;line-height:1.6;font-style:italic}
+.endorsement-card .endorsement-short{font-size:clamp(1.65rem,3vw,2.35rem);font-weight:900;line-height:1.25}
+.endorsement-type{margin:0;color:var(--red);font-size:.72rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
+.endorsement-summary{color:var(--text);line-height:1.65}
+.endorsement-name{margin:auto 0 0;color:var(--navy-dark);font-weight:900}
+.endorsement-name a{text-decoration:none}
+.endorsement-name a:hover{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:4px}
+.endorsement-control{width:48px;height:48px;border:1px solid rgba(255,255,255,.55);border-radius:50%;background:rgba(8,26,59,.78);color:#fff;font-size:1.5rem;cursor:pointer;transition:background .2s,transform .2s}
+.endorsement-control:hover{background:var(--red);transform:translateY(-2px)}
+.endorsement-control:focus-visible,.endorsement-track:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.endorsement-footer{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:4px 64px 0;color:#e8edf7;font-size:.82rem}
+.endorsement-footer p{margin:0}
+.endorsement-footer a{font-weight:800;text-underline-offset:4px}
+
+@media(max-width:900px){.backdrop-copy{padding:34px}.endorsement-card{flex-basis:72%}}
+@media(max-width:700px){.photo-text-section-river{background-position:62% center}.backdrop-copy{padding:28px 24px}.endorsement-carousel{grid-template-columns:40px minmax(0,1fr) 40px;gap:8px}.endorsement-control{width:40px;height:40px}.endorsement-card{flex-basis:90%;min-height:360px;padding:28px 24px}.endorsement-footer{margin-inline:48px;align-items:flex-start;flex-direction:column;gap:8px}}
+@media(prefers-reduced-motion:reduce){.endorsement-track{scroll-behavior:auto}.endorsement-control{transition:none}}
 textarea{font:inherit}
 .preview-form textarea{display:block;width:100%;margin-top:8px;padding:10px 14px;border:1px solid #d8dce5;border-radius:2px;background:#f7f8fa;color:#333;resize:vertical}
 .preview-form .form-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
