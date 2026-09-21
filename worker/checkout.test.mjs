@@ -35,6 +35,7 @@ const donor = {
 test("builds a custom Stripe session without donor PII in parameters", () => {
   const params = elementsSessionParameters(10000);
   assert.equal(params.get("ui_mode"), "custom");
+  assert.equal(params.get("phone_number_collection[enabled]"), "true");
   assert.equal(params.get("line_items[0][price_data][unit_amount]"), "10000");
   assert.equal(params.get("custom_fields[0][key]"), null);
   assert.equal(params.toString().includes(donor.email), false);

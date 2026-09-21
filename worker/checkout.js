@@ -68,6 +68,7 @@ export function elementsSessionParameters(amountCents, origin = PAGES_ORIGIN) {
     mode: "payment",
     ui_mode: "custom",
     return_url: returnUrl(origin),
+    "phone_number_collection[enabled]": "true",
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][unit_amount]": String(amountCents),
     "line_items[0][price_data][product_data][name]": "2026 General Election Contribution",
