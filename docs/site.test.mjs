@@ -69,6 +69,7 @@ test('unsuccessful response preserves entries and shows an inline error', async 
 test('donation page keeps the form and restored campaign story together', () => {
   const html = readFileSync(new URL('./donate/index.html', import.meta.url), 'utf8');
   const css = readFileSync(new URL('./donate/donate.css', import.meta.url), 'utf8');
+  const script = readFileSync(new URL('./donate/donate.js', import.meta.url), 'utf8');
   assert.match(html, /class="donation-story"/);
   assert.match(html, /Support Local Leadership/);
   assert.match(html, /portrait-donate\.jpg/);
@@ -78,6 +79,9 @@ test('donation page keeps the form and restored campaign story together', () => 
   assert.match(html, /data-amount="100" class="selected"/);
   assert.match(css, /grid-template-areas: "story form"/);
   assert.match(css, /grid-template-areas: "form" "story"/);
+  assert.match(html, /<option value="monthly">Monthly<\/option>/);
+  assert.match(html, /repeat each month until canceled/);
+  assert.match(script, /frequency: billingFrequency\.value/);
 });
 
 test('homepage highlights Next Generation in campaign red', () => {

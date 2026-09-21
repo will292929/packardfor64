@@ -63,9 +63,10 @@ export function sessionParameters(amountCents, origin = PAGES_ORIGIN) {
   return params;
 }
 
-export function elementsSessionParameters(amountCents, origin = PAGES_ORIGIN) {
-  return new URLSearchParams({
-    mode: "payment",
+export function elementsSessionParameters(amountCents, origin = PAGES_ORIGIN, frequency = "once") {
+  const monthly = frequency === "monthly";
+  const params = new URLSearchParams({
+    mode: monthly ? "subscription" : "payment",
     ui_mode: "custom",
     return_url: returnUrl(origin),
     "phone_number_collection[enabled]": "true",
@@ -74,8 +75,17 @@ export function elementsSessionParameters(amountCents, origin = PAGES_ORIGIN) {
     "line_items[0][price_data][product_data][name]": "2026 General Election Contribution",
     "line_items[0][quantity]": "1",
     "metadata[election]": "2026-general",
-    "payment_intent_data[metadata][election]": "2026-general"
+    "metadata[billing_frequency]": monthly ? "monthly" : "once"
   });
+  if (monthly) {
+    params.set("line_items[0][price_data][recurring][interval]", "month");
+    params.set("subscription_data[metadata][election]", "2026-general");
+    params.set("subscription_data[metadata][billing_frequency]", "monthly");
+  } else {
+    params.set("payment_intent_data[metadata][election]", "2026-general");
+    params.set("payment_intent_data[metadata][billing_frequency]", "once");
+  }
+  return params;
 }
 
 const textFields = {
@@ -136,7 +146,7 @@ async function saveDonor(db, sessionId, amountCents, donor) {
       donor.occupation, donor.employer, donor.phone, donor.email).run();
 }
 
-async function sendPaidDonationEmail(row, fetchMail) {
+async function sendPaidDonationEmail(row, fetchMail, frequency) {
   const amount = new Intl.NumberFormat("en-US", {
     style: "currency", currency: "USD"
   }).format(row.amount_cents / 100);
@@ -154,6 +164,7 @@ async function sendPaidDonationEmail(row, fetchMail) {
       _template: "table",
       payment_status: "PAID — confirmed by Stripe",
       election: "2026 General Election",
+      billing_frequency: frequency === "monthly" ? "Monthly recurring" : "One time",
       amount,
       full_name: row.full_name,
       street_address: row.street_address,
@@ -198,8 +209,11 @@ export async function reconcileDonations(env, fetchStripe = fetch, fetchMail = f
       );
       if (!stripeResponse.ok) throw new Error("Could not check Stripe session");
       const session = await stripeResponse.json();
+      const frequency = session.metadata?.billing_frequency;
       if (session.id !== row.session_id || session.ui_mode !== "custom"
         || session.metadata?.election !== "2026-general"
+        || !["once", "monthly"].includes(frequency)
+        || (frequency === "monthly" ? session.mode !== "subscription" : session.mode !== "payment")
         || session.currency !== "usd" || session.amount_total !== row.amount_cents) {
         throw new Error("Stripe session does not match the donor record");
       }
@@ -222,7 +236,7 @@ export async function reconcileDonations(env, fetchStripe = fetch, fetchMail = f
         .bind(row.session_id).run();
       if (claim.meta.changes !== 1) continue;
       try {
-        await sendPaidDonationEmail(row, fetchMail);
+        await sendPaidDonationEmail(row, fetchMail, frequency);
         await env.DONORS.prepare(`UPDATE donor_submissions SET email_sent_at = CURRENT_TIMESTAMP,
           email_claimed_at = NULL, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?`)
           .bind(row.session_id).run();
@@ -324,8 +338,12 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
       : json(404, { error: "Session not found" }, origin);
   }
   const { amountCents } = payload;
+  const frequency = payload.frequency || "once";
   if (!Number.isInteger(amountCents) || amountCents < MIN_CENTS || amountCents > MAX_CENTS) {
     return json(400, { error: "Enter an amount from $5 to $500" }, origin);
+  }
+  if (!["once", "monthly"].includes(frequency)) {
+    return json(400, { error: "Choose a valid billing frequency" }, origin);
   }
   if (!env.STRIPE_SECRET_KEY) {
     return json(503, { error: "Checkout is temporarily unavailable" }, origin);
@@ -336,7 +354,7 @@ export async function handleRequest(request, env, fetchStripe = fetch) {
     if (!donor) return json(400, { error: "Valid donor details are required" }, origin);
     if (!env.DONORS) return json(503, { error: "Checkout is temporarily unavailable" }, origin);
     const session = await stripeSession(fetchStripe, env.STRIPE_SECRET_KEY,
-      elementsSessionParameters(amountCents, origin));
+      elementsSessionParameters(amountCents, origin, frequency));
     if (!session || typeof session.client_secret !== "string" || typeof session.id !== "string") {
       return json(502, { error: "Could not start checkout" }, origin);
     }

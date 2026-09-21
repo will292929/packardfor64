@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../styles.css">
   <link rel="stylesheet" href="./donate.css?v=20260917d">
   <script src="https://js.stripe.com/clover/stripe.js" defer></script>
-  <script src="./donate.js?v=20260917c" defer></script>
+  <script src="./donate.js?v=20260920a" defer></script>
   <script src="../site.js" defer></script>
 </head>
 <body class="donation-page">
@@ -89,8 +89,12 @@
         </fieldset>
 
         <label class="donation-field" for="billing-frequency">Billing Frequency
-          <select id="billing-frequency" disabled><option>Once</option></select>
+          <select id="billing-frequency" name="billingFrequency" required>
+            <option value="once" selected>Once</option>
+            <option value="monthly">Monthly</option>
+          </select>
         </label>
+        <p class="donation-frequency-note" id="billing-frequency-note">Monthly contributions repeat each month until canceled. To cancel, email ShawnPackardfor64@gmail.com.</p>
 
         <h2 class="donation-subhead">Payment method</h2>
         <div class="payment-area">

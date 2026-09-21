@@ -9,6 +9,7 @@ const donateButton = document.getElementById("donate-button");
 const otherButton = document.getElementById("other-amount-button");
 const otherField = document.querySelector(".other-amount-field");
 const otherInput = document.getElementById("other-amount");
+const billingFrequency = document.getElementById("billing-frequency");
 const amountButtons = [...document.querySelectorAll("[data-amount]")];
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 let selectedAmount = 100;
@@ -47,7 +48,7 @@ function amountCents() {
 
 function updateAmountDisplay() {
   const cents = amountCents();
-  totalLabel.textContent = cents === null ? "" : money.format(cents / 100);
+  totalLabel.textContent = cents === null ? "" : `${money.format(cents / 100)}${billingFrequency.value === "monthly" ? " monthly" : ""}`;
 }
 
 function clearPayment() {
@@ -95,7 +96,11 @@ async function loadPayment() {
   paymentHint.textContent = "Loading secure payment…";
   statusMessage.textContent = "";
   try {
-    const session = await postJson("/elements-session", { amountCents: cents, donor: donorDetails() });
+    const session = await postJson("/elements-session", {
+      amountCents: cents,
+      frequency: billingFrequency.value,
+      donor: donorDetails()
+    });
     if (version !== loadVersion) return;
     if (typeof session.clientSecret !== "string" || typeof session.sessionId !== "string") {
       throw new Error("The secure form could not load. Please try again.");
@@ -166,6 +171,11 @@ form.addEventListener("input", (event) => {
   schedulePayment();
 });
 form.addEventListener("change", schedulePayment);
+billingFrequency.addEventListener("change", () => {
+  clearPayment();
+  updateAmountDisplay();
+  schedulePayment();
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -210,7 +220,9 @@ form.addEventListener("submit", async (event) => {
       const heading = document.createElement("h1");
       heading.textContent = "Thank you for your contribution";
       const note = document.createElement("p");
-      note.textContent = "Stripe has confirmed your payment. A receipt will be sent to your email.";
+      note.textContent = billingFrequency.value === "monthly"
+        ? "Stripe has confirmed your first payment. Your contribution will repeat monthly until canceled, and a receipt will be sent to your email."
+        : "Stripe has confirmed your payment. A receipt will be sent to your email.";
       form.append(heading, note);
     } else if (payment.status === "complete") {
       statusMessage.textContent = "Your contribution was submitted and is processing. Check your Stripe receipt for the final status.";

@@ -35,6 +35,7 @@ const donor = {
 test("builds a custom Stripe session without donor PII in parameters", () => {
   const params = elementsSessionParameters(10000);
   assert.equal(params.get("ui_mode"), "custom");
+  assert.equal(params.get("mode"), "payment");
   assert.equal(params.get("phone_number_collection[enabled]"), "true");
   assert.equal(params.get("line_items[0][price_data][unit_amount]"), "10000");
   assert.equal(params.get("custom_fields[0][key]"), null);
@@ -42,6 +43,15 @@ test("builds a custom Stripe session without donor PII in parameters", () => {
   assert.deepEqual(validateDonor(donor), donor);
   assert.equal(validateDonor({ ...donor, occupation: "" }), null);
   assert.equal(validateDonor({ ...donor, country: "GB" }), null);
+});
+
+test("builds a monthly custom Stripe subscription session", () => {
+  const params = elementsSessionParameters(2500, "https://packardfor64.com", "monthly");
+  assert.equal(params.get("mode"), "subscription");
+  assert.equal(params.get("line_items[0][price_data][recurring][interval]"), "month");
+  assert.equal(params.get("metadata[billing_frequency]"), "monthly");
+  assert.equal(params.get("subscription_data[metadata][billing_frequency]"), "monthly");
+  assert.equal(params.get("payment_intent_data[metadata][election]"), null);
 });
 
 test("uses the custom domain root for Stripe's return URL", () => {
@@ -164,7 +174,8 @@ function stripeLookup(paymentStatus, status = "complete") {
   return async (_url, options) => {
     assert.equal(options.headers.Authorization, "Bearer sk_test_not_real");
     return new Response(JSON.stringify({
-      id: "cs_test_abc", ui_mode: "custom", metadata: { election: "2026-general" },
+      id: "cs_test_abc", ui_mode: "custom", mode: "payment",
+      metadata: { election: "2026-general", billing_frequency: "once" },
       currency: "usd", amount_total: 10000, status, payment_status: paymentStatus
     }));
   };
@@ -179,6 +190,7 @@ test("emails full donor details only after Stripe confirms payment, then dedupli
     const body = JSON.parse(options.body);
     assert.match(body._subject, /paid donation cs_test_abc/);
     assert.equal(body.amount, "$100.00");
+    assert.equal(body.billing_frequency, "One time");
     assert.equal(body.full_name, donor.fullName);
     assert.equal(body.occupation, donor.occupation);
     assert.equal(body.employer, donor.employer);

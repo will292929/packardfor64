@@ -53,6 +53,7 @@
 .donation-success p { color: #404a55; }
 .donation-return-panel { max-width: 680px; padding: 40px; background: #fff; border-top: 5px solid var(--red); box-shadow: var(--shadow); }
 .donation-return-panel h1 { font-size: clamp(2rem, 3vw, 2.8rem); }
+.donation-frequency-note { margin: -10px 0 24px; color: #5c6476; font-size: .78rem; line-height: 1.55; }
 @media (min-width: 901px) {
   .donation-layout { grid-template-areas: "story form"; }
 }
